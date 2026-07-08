@@ -1,0 +1,127 @@
+.container {
+  position: relative;
+  width: 100%;
+}
+
+.label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: var(--space-2);
+  color: var(--text-main);
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.inputWrapper:hover, .inputWrapper.open {
+  border-color: var(--primary);
+}
+
+.inputWrapper.open {
+  box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.1);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.selectedDisplay {
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.placeholder {
+  color: #9CA3AF;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+}
+
+.clearIcon {
+  cursor: pointer;
+}
+
+.clearIcon:hover {
+  color: var(--error);
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--primary);
+  border-top: none;
+  border-bottom-left-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border);
+  background: var(--background);
+}
+
+.searchIcon {
+  color: var(--text-muted);
+  margin-right: var(--space-2);
+}
+
+.searchInput {
+  flex-grow: 1;
+  border: none;
+  background: transparent;
+  padding: var(--space-2) 0;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.875rem;
+}
+
+.optionsList {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.option {
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  color: var(--text-main);
+}
+
+.option:hover {
+  background-color: var(--background);
+  color: var(--primary);
+}
+
+.option.selected {
+  background-color: rgba(26, 54, 93, 0.05);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.noResults {
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--text-muted);
+}

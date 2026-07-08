@@ -1,0 +1,118 @@
+.footer {
+  background-color: var(--primary);
+  color: var(--surface);
+  padding-top: var(--space-16);
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  margin-bottom: var(--space-12);
+}
+
+@media (min-width: 768px) {
+  .footerGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .footerGrid {
+    grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  }
+}
+
+.footerSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--surface);
+}
+
+.description {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+}
+
+.socialLinks {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.socialLinks a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--surface);
+  transition: all var(--transition-fast);
+}
+
+.socialLinks a:hover {
+  background-color: var(--secondary);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.footerTitle {
+  font-size: 1.25rem;
+  color: var(--surface);
+  margin-bottom: var(--space-2);
+}
+
+.footerLinks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.footerLinks a {
+  color: rgba(255, 255, 255, 0.8);
+  transition: color var(--transition-fast);
+}
+
+.footerLinks a:hover {
+  color: var(--secondary);
+  padding-left: 4px;
+}
+
+.contactInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.contactInfo li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.contactIcon {
+  color: var(--secondary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.footerBottom {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: var(--space-4) 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+}

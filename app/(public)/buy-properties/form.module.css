@@ -1,0 +1,143 @@
+.pageWrapper {
+  padding-top: var(--space-24);
+  padding-bottom: var(--space-24);
+  min-height: 100vh;
+  background-color: var(--background);
+}
+
+.formContainer {
+  max-width: 800px;
+  background-color: var(--surface);
+  padding: var(--space-8);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  margin: 0 auto;
+}
+
+.formHeader {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.formTitle {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: var(--space-2);
+}
+
+.formSubtitle {
+  color: var(--text-muted);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .formGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.submitBtn {
+  width: 100%;
+  margin-top: var(--space-6);
+}
+
+.successMessage {
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.successIcon {
+  color: var(--success);
+  margin-bottom: var(--space-4);
+  display: inline-block;
+}
+
+.successTitle {
+  font-size: 1.5rem;
+  color: var(--text-main);
+  margin-bottom: var(--space-2);
+}
+
+.successText {
+  color: var(--text-muted);
+}
+
+/* Preference Module Specific Styles */
+.sectionDivider {
+  margin: var(--space-8) 0;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-6);
+}
+
+.sectionHeading {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin-bottom: var(--space-4);
+  font-family: var(--font-heading);
+}
+
+.summaryBox {
+  background-color: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.summaryTitle {
+  font-size: 1.25rem;
+  margin-bottom: var(--space-4);
+  color: var(--primary);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-2);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .summaryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryLabel {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.summaryValue {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.hiddenMobile {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .hiddenMobile {
+    display: block;
+  }
+}
+
+

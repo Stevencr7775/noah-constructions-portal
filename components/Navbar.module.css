@@ -1,0 +1,132 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: transparent;
+  z-index: 50;
+  transition: all var(--transition-normal);
+  padding: var(--space-4) 0;
+}
+
+.header.scrolled {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3) 0;
+}
+
+.header.scrolled .logo,
+.header.scrolled .navLink,
+.header.scrolled .mobileMenuBtn {
+  color: var(--text-main);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--surface); /* Default to white for hero section */
+  transition: color var(--transition-fast);
+}
+
+.header:not(.scrolled) .logo:hover {
+  color: var(--secondary);
+}
+
+.navContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1536px !important; /* Larger than default container, but not stretching to absolute edges */
+}
+
+.desktopNav {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .desktopNav {
+    display: block;
+  }
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem; /* Increased spacing between links */
+}
+
+.navLink {
+  font-weight: 500;
+  color: var(--surface); /* Default to white */
+  font-size: 0.95rem;
+  position: relative;
+  white-space: nowrap;
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: var(--secondary);
+  transition: width var(--transition-fast);
+}
+
+.navLink:hover::after,
+.navLink.active::after {
+  width: 100%;
+}
+
+.header.scrolled .navLink.active {
+  color: var(--primary);
+}
+
+.mobileMenuBtn {
+  display: block;
+  background: none;
+  border: none;
+  color: var(--surface);
+}
+
+@media (min-width: 1024px) {
+  .mobileMenuBtn {
+    display: none;
+  }
+}
+
+.mobileNav {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: var(--surface);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.mobileNavLinks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.mobileNavLink {
+  display: block;
+  font-weight: 500;
+  color: var(--text-main);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.mobileNavLink.active {
+  color: var(--primary);
+  font-weight: 700;
+}

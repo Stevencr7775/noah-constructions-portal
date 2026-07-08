@@ -1,0 +1,169 @@
+.pageWrapper {
+  background-color: var(--background);
+  min-height: 100vh;
+}
+
+.header {
+  background-color: var(--primary);
+  padding: var(--space-24) 0 var(--space-16);
+  position: relative;
+  overflow: hidden;
+}
+
+.headerIcon {
+  color: var(--secondary);
+  margin: 0 auto var(--space-4);
+  display: block;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.projectCard {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+}
+
+@media (min-width: 1024px) {
+  .projectCard {
+    flex-direction: row;
+  }
+  
+  .projectCard:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+}
+
+.imageSection {
+  position: relative;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .imageSection {
+    width: 50%;
+  }
+}
+
+.projectImage {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  object-fit: cover;
+}
+
+.cameraIcon {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  backdrop-filter: blur(4px);
+}
+
+.contentSection {
+  padding: var(--space-8);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .contentSection {
+    width: 50%;
+  }
+}
+
+.projectTitle {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: var(--space-4);
+}
+
+.metaInfo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.progressContainer {
+  margin-bottom: var(--space-6);
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.progressLabel {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.progressPercent {
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.progressBarBg {
+  width: 100%;
+  height: 12px;
+  background-color: var(--border);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+  border-radius: var(--radius-full);
+}
+
+.statusBox {
+  background: rgba(26, 54, 93, 0.05);
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  border-left: 4px solid var(--primary);
+  margin-bottom: var(--space-6);
+}
+
+.statusLabel {
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-right: var(--space-2);
+}
+
+.statusText {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.description {
+  color: var(--text-muted);
+  line-height: 1.7;
+}

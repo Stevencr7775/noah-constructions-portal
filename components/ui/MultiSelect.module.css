@@ -1,0 +1,70 @@
+.container {
+  width: 100%;
+}
+
+.label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: var(--space-3);
+  color: var(--text-main);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.optionCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  user-select: none;
+}
+
+.optionCard:hover {
+  border-color: var(--primary);
+  background-color: var(--background);
+}
+
+.optionCard.selected {
+  border-color: var(--primary);
+  background-color: rgba(26, 54, 93, 0.05);
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 1px solid #CBD5E1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  background-color: white;
+}
+
+.checkbox.checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkIcon {
+  color: white;
+}
+
+.optionName {
+  font-size: 0.95rem;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.optionCard.selected .optionName {
+  color: var(--primary);
+}

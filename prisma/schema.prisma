@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Property {
+  id              String   @id @default(cuid())
+  propertyId      String   @unique
+  purpose         String?
+  category        String?
+  state           String?
+  city            String?
+  district        String?
+  locality        String?
+  plotSize        String?
+  facing          String?
+  roadSize        String?
+  totalPrice      Float?
+  pricePerSqYard  Float?
+  isNegotiable    Boolean  @default(false)
+  description     String?
+  status          String   @default("Pending Approval")
+  isFeatured      Boolean  @default(false)
+  latitude        Float?
+  longitude       Float?
+
+  // Relations
+  seller          Seller?  @relation(fields: [sellerId], references: [id])
+  sellerId        String?
+  media           Media[]
+
+  // JSON arrays stored as strings in SQLite
+  layoutApprovals String
+  amenities       String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Seller {
+  id            String     @id @default(cuid())
+  sellerId      String     @unique @default(cuid())
+  type          String     // "OWNER", "AGENT", "BUILDER", "CORPORATE"
+  
+  // Common fields
+  name          String?
+  mobile        String?
+  email         String     @unique
+  password      String
+  address       String?
+  city          String?
+  state         String?    @default("Telangana")
+
+  // Agent specific
+  agency        String?
+  reraNumber    String?
+  experience    String?
+
+  // Builder / Corporate specific
+  companyName   String?
+  regNumber     String?
+  website       String?
+  contactPerson String?
+  designation   String?
+  companySize   String?
+  businessReq   String?
+
+  properties    Property[]
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Media {
+  id         String   @id @default(cuid())
+  url        String
+  type       String   // "image", "video", "document"
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+}
+
+model State {
+  id      String   @id @default(cuid())
+  name    String   @unique
+  cities  City[]
+}
+
+model City {
+  id        String     @id @default(cuid())
+  name      String
+  state     State      @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  stateId   String
+  districts District[]
+
+  @@unique([name, stateId])
+}
+
+model District {
+  id         String     @id @default(cuid())
+  name       String
+  city       City       @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  cityId     String
+  localities Locality[]
+
+  @@unique([name, cityId])
+}
+
+model Locality {
+  id         String   @id @default(cuid())
+  name       String
+  district   District @relation(fields: [districtId], references: [id], onDelete: Cascade)
+  districtId String
+
+  @@unique([name, districtId])
+}
+
+model LayoutApproval {
+  id   String @id @default(cuid())
+  name String @unique
+}
+
+model PropertyCategory {
+  id   String @id @default(cuid())
+  name String @unique
+}
+
+model PlotSize {
+  id   String @id @default(cuid())
+  name String @unique
+}
+
+model AdditionalPreference {
+  id   String @id @default(cuid())
+  name String @unique
+}
