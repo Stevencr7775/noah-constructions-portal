@@ -59,10 +59,10 @@ export default async function PropertyDetailsPage({ params }: { params: { id: st
           </p>
           <div style={{ marginTop: "1.5rem" }}>
             <h2 style={{ fontSize: "2rem", fontWeight: "bold", color: "var(--primary)" }}>
-              ₹{property.totalPrice?.toLocaleString('en-IN') || 'Price on request'}
+              ₹{property.totalPrice ? Number(property.totalPrice).toLocaleString('en-IN') : 'Price on request'}
             </h2>
             {property.pricePerSqYard && (
-              <p className="text-muted">₹{property.pricePerSqYard.toLocaleString('en-IN')} per Sq.Yard</p>
+              <p className="text-muted">₹{Number(property.pricePerSqYard).toLocaleString('en-IN')} per Sq.Yard</p>
             )}
           </div>
         </div>
