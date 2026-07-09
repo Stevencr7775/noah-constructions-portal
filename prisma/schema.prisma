@@ -19,26 +19,71 @@ model Property {
   plotSize        String?
   facing          String?
   roadSize        String?
-  totalPrice      Float?
-  pricePerSqYard  Float?
+  totalPrice      String?
+  pricePerSqYard  String?
   isNegotiable    Boolean  @default(false)
   description     String?
   status          String   @default("Pending Approval")
   isFeatured      Boolean  @default(false)
+  title           String?
+  propertyType    String?
+  ownershipType   String?
+  availableFrom   DateTime?
+  propertyAge     String?
+  village         String?
+  surveyNumber    String?
+  address         String?
+  landmark        String?
+  googleMapsUrl   String?
+  developmentRatio String? // e.g. "60:40", "50:50" for Joint/Ratio Development
+  squareFeet      Float?
+  squareYards     Float?
+  acres           Float?
+  guntas          Float?
+  cornerPlot      Boolean  @default(false)
+  openSides       Int?
+  boundaryWall    Boolean  @default(false)
+  utilities       String?
+  features        String?
+  
   latitude        Float?
   longitude       Float?
+
+  views           Int      @default(0)
+  enquiries       Int      @default(0)
 
   // Relations
   seller          Seller?  @relation(fields: [sellerId], references: [id])
   sellerId        String?
+  project         Project? @relation(fields: [projectId], references: [id])
+  projectId       String?
+  buyer           User?    @relation("PropertyBuyer", fields: [buyerId], references: [id])
+  buyerId         String?
+  
   media           Media[]
+  favorites       Favorite[]
+  recentlyViewed  RecentlyViewed[]
+  leads           Lead[]
+  siteVisits      SiteVisit[]
+
+  // Inventory Management
+  block           String?
+  gardenFacing    Boolean  @default(false)
+  currentStatus   String?  // Available, Reserved, Sold, Blocked, Under Documentation, Cancelled
+
 
   // JSON arrays stored as strings in SQLite
   layoutApprovals String
   amenities       String
+  documents       Document[]
 
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  
+  @@index([status])
+  @@index([propertyType])
+  @@index([purpose])
+  @@index([sellerId])
 }
 
 model Seller {
@@ -70,6 +115,13 @@ model Seller {
   businessReq   String?
 
   properties    Property[]
+  projects      Project[]
+  leads         Lead[]
+  siteVisits    SiteVisit[]
+  notifications Notification[]
+  conversations Conversation[]
+  messages      Message[]
+  followUps     FollowUp[]
   
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
@@ -78,7 +130,8 @@ model Seller {
 model Media {
   id         String   @id @default(cuid())
   url        String
-  type       String   // "image", "video", "document"
+  type         String   // "image", "video", "drone", "360", "floor_plan", "document"
+  documentType String?  // "Sale Deed", "EC", etc.
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   propertyId String
 }
@@ -137,3 +190,390 @@ model AdditionalPreference {
   id   String @id @default(cuid())
   name String @unique
 }
+
+model User {
+  id           String   @id @default(cuid())
+  role         String   // "BUYER", "ADMIN", "SUPER_ADMIN"
+  name         String
+  email        String   @unique
+  phone        String?
+  password     String
+  profilePhoto String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  favorites       Favorite[]
+  recentlyViewed  RecentlyViewed[]
+  leads           Lead[]
+  siteVisits      SiteVisit[]
+  notifications   Notification[]
+  conversations   Conversation[]
+  messages        Message[]
+  followUps       FollowUp[]
+  
+  purchasedProperties Property[] @relation("PropertyBuyer")
+}
+
+model VerificationToken {
+  id         String   @id @default(cuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model PasswordResetToken {
+  id         String   @id @default(cuid())
+  email      String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([email, token])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, propertyId])
+}
+
+model RecentlyViewed {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String
+  viewedAt   DateTime @default(now())
+
+  @@unique([userId, propertyId])
+}
+
+model SearchAnalytics {
+  id        String   @id @default(cuid())
+  keyword   String?
+  category  String?
+  location  String?
+  filters   String?  // Stored as JSON string
+  hits      Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      String     @default("Active") // Active, Completed, Upcoming
+  progress    Int        @default(0) // 0-100%
+  builder     Seller     @relation(fields: [builderId], references: [id], onDelete: Cascade)
+  builderId   String
+  properties  Property[]
+  documents   Document[]
+  
+  // Extended CMS Fields
+  reraNumber          String?
+  expectedCompletion  DateTime?
+  masterPlanUrl       String?
+  locationUrl         String?
+  videoUrl            String?
+  droneVideoUrl       String?
+  amenities           String? // Stored as JSON string
+  
+  // Project PM Extensions
+  projectCode         String?  @unique
+  projectType         String?  // Residential, Commercial, Mixed Use, Villa Community, Apartment, Layout, Farm Land, Industrial
+  location            String?
+  launchDate          DateTime?
+  actualCompletion    DateTime?
+  projectManager      String?
+  architect           String?
+  engineer            String?
+  contractor          String?
+
+  milestones          ProjectMilestone[]
+  siteVisits          SiteVisit[]
+  
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model ProjectMilestone {
+  id           String   @id @default(cuid())
+  name         String
+  percentage   Int      @default(0)
+  date         DateTime?
+  remarks      String?
+  images       String?  // JSON string
+  videos       String?  // JSON string
+  status       String   @default("Pending") // Pending, In Progress, Completed
+  
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Lead {
+  id                 String   @id @default(cuid())
+  enquiryId          String?  @unique
+  name               String?
+  email              String?
+  phone              String?
+  contactMethod      String?  // WhatsApp, Call, Email
+  message            String?
+  source             String?  // Website, Direct
+  preferredVisitDate String?
+  preferredVisitTime String?
+  
+  status     String   @default("New") // New, Contacted, Interested, Site Visit, Negotiation, Booked, Closed Won, Closed Lost, Cancelled
+  notes      String?
+  
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String?
+  buyer      User?    @relation(fields: [buyerId], references: [id])
+  buyerId    String?
+  seller     Seller?  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId   String?
+  
+  followUps  FollowUp[]
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model FollowUp {
+  id           String   @id @default(cuid())
+  notes        String
+  reminderDate DateTime
+  isCompleted  Boolean  @default(false)
+  
+  lead         Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  leadId       String
+  
+  // Assigned to Admin/User or Seller
+  user         User?    @relation(fields: [userId], references: [id])
+  userId       String?
+  seller       Seller?  @relation(fields: [sellerId], references: [id])
+  sellerId     String?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteVisit {
+  id         String   @id @default(cuid())
+  scheduledAt DateTime
+  status     String   @default("Pending") // Pending, Confirmed, Completed, Cancelled
+  outcome    String?  // Interested, Not Interested, Booked
+  notes      String?
+  
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId String?
+  project    Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId  String?
+  
+  buyer      User     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  buyerId    String
+  seller     Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // Alert, Message, Lead, System
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  seller    Seller?  @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId  String?
+  createdAt DateTime @default(now())
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  buyer     User     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  buyerId   String
+  seller    Seller   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  sellerId  String
+  messages  Message[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  isRead         Boolean      @default(false)
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+  
+  // Who sent it? Either User or Seller
+  senderUser     User?        @relation(fields: [senderUserId], references: [id])
+  senderUserId   String?
+  senderSeller   Seller?      @relation(fields: [senderSellerId], references: [id])
+  senderSellerId String?
+  
+  createdAt      DateTime     @default(now())
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  name         String
+  url          String
+  documentType String   // Sale Deed, RERA, Brochure, Layout Plan, etc.
+  visibility   String   @default("Public") // Public, Internal
+  status       String   @default("Verified") // Pending, Verified
+  version      Int      @default(1)
+  description  String?
+  uploadedBy   String?
+  
+  property     Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId   String?
+  project      Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId    String?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ----------------------------------------------------
+// CMS MODELS
+// ----------------------------------------------------
+
+model WebsiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  group     String   // e.g., 'Homepage', 'Contact', 'SEO', 'General'
+  updatedAt DateTime @updatedAt
+}
+
+model TeamMember {
+  id          String   @id @default(cuid())
+  name        String
+  designation String
+  experience  String?
+  bio         String?
+  photoUrl    String?
+  email       String?
+  phone       String?
+  linkedinUrl String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model Testimonial {
+  id          String   @id @default(cuid())
+  customerName String
+  rating      Int      @default(5)
+  review      String
+  photoUrl    String?
+  videoUrl    String?
+  isFeatured  Boolean  @default(false)
+  status      String   @default("Pending") // Pending, Approved
+  createdAt   DateTime @default(now())
+}
+
+model BlogCategory {
+  id        String     @id @default(cuid())
+  name      String     @unique
+  slug      String     @unique
+  posts     BlogPost[]
+}
+
+model BlogPost {
+  id          String       @id @default(cuid())
+  title       String
+  slug        String       @unique
+  content     String
+  excerpt     String?
+  coverImage  String?
+  author      String?
+  readingTime String?
+  isFeatured  Boolean      @default(false)
+  status      String       @default("Draft") // Draft, Published
+  
+  category    BlogCategory @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  
+  metaTitle   String?
+  metaDesc    String?
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model NewsEvent {
+  id          String   @id @default(cuid())
+  title       String
+  type        String   // News, Event, Press Release
+  content     String
+  date        DateTime
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+}
+
+model JobDepartment {
+  id       String       @id @default(cuid())
+  name     String       @unique
+  openings JobOpening[]
+}
+
+model JobOpening {
+  id           String        @id @default(cuid())
+  title        String
+  location     String
+  experience   String
+  description  String
+  requirements String
+  deadline     DateTime?
+  status       String        @default("Open") // Open, Closed
+  
+  department   JobDepartment @relation(fields: [departmentId], references: [id])
+  departmentId String
+  
+  createdAt    DateTime      @default(now())
+}
+
+model FaqCategory {
+  id    String @id @default(cuid())
+  name  String @unique
+  faqs  Faq[]
+}
+
+model Faq {
+  id         String      @id @default(cuid())
+  question   String
+  answer     String
+  
+  category   FaqCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  entity    String   // Property, Project, User, Lead, etc.
+  entityId  String?
+  details   String?  // JSON string
+  userId    String?
+  role      String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  
+  @@index([entity])
+  @@index([action])
+  @@index([createdAt])
+}
+

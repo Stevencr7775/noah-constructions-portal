@@ -5,55 +5,56 @@ import * as xlsx from 'xlsx';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const format = searchParams.get('format') || 'xlsx'; // xlsx or csv
-
+    const format = searchParams.get('format') || 'xlsx';
+    
+    // Fetch all properties with basic data for export
     const properties = await prisma.property.findMany({
-      include: {
-        owner: true,
-        agent: true
-      },
-      orderBy: { createdAt: 'desc' }
+      select: {
+        propertyId: true,
+        title: true,
+        propertyType: true,
+        status: true,
+        totalPrice: true,
+        city: true,
+        locality: true,
+        views: true,
+        enquiries: true,
+      }
     });
 
-    const exportData = properties.map(p => ({
-      'Property ID': p.propertyId,
-      'Purpose': p.purpose,
-      'Category': p.category,
-      'District': p.district,
-      'Locality': p.locality,
-      'Plot Size': p.plotSize,
-      'Facing': p.facing,
-      'Road Size': p.roadSize,
-      'Total Price (Rs)': p.totalPrice,
-      'Status': p.status,
-      'Owner/Agent': p.owner ? p.owner.name : (p.agent ? p.agent.name : 'N/A'),
-      'Date Added': p.createdAt.toISOString().split('T')[0]
-    }));
-
-    const worksheet = xlsx.utils.json_to_sheet(exportData);
-    const workbook = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(workbook, worksheet, "Properties");
-
     if (format === 'csv') {
-      const csvBuffer = xlsx.write(workbook, { type: 'buffer', bookType: 'csv' });
-      return new NextResponse(csvBuffer, {
+      const header = "ID,Title,Type,Status,Price,City,Locality,Views,Enquiries\n";
+      const rows = properties.map(p => 
+        `"${p.propertyId}","${p.title || ''}","${p.propertyType || ''}","${p.status}","${p.totalPrice || 0}","${p.city || ''}","${p.locality || ''}",${p.views},${p.enquiries}`
+      ).join("\n");
+      
+      return new NextResponse(header + rows, {
         headers: {
+          'Content-Type': 'text/csv',
           'Content-Disposition': 'attachment; filename="properties_export.csv"',
-          'Content-Type': 'text/csv'
-        }
-      });
-    } else {
-      const excelBuffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
-      return new NextResponse(excelBuffer, {
-        headers: {
-          'Content-Disposition': 'attachment; filename="properties_export.xlsx"',
-          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        }
+        },
       });
     }
 
-  } catch (error: unknown) {
-    console.error("Export error:", error);
-    return NextResponse.json({ success: false, error: 'Export failed' }, { status: 500 });
+    if (format === 'xlsx') {
+      const worksheet = xlsx.utils.json_to_sheet(properties);
+      const workbook = xlsx.utils.book_new();
+      xlsx.utils.book_append_sheet(workbook, worksheet, "Properties");
+      
+      const buffer = xlsx.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      
+      return new NextResponse(buffer, {
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': 'attachment; filename="properties_export.xlsx"',
+        },
+      });
+    }
+
+    return NextResponse.json({ error: 'Unsupported format' }, { status: 400 });
+
+  } catch (error) {
+    console.error("Export Error:", error);
+    return NextResponse.json({ error: 'Failed to export data' }, { status: 500 });
   }
 }

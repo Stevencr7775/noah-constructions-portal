@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { UploadCloud, CheckCircle2, Trash2 } from "lucide-react";
 import styles from "./page.module.css";
 import Autocomplete from "@/components/ui/Autocomplete";
@@ -62,18 +62,14 @@ export default function PropertyEntry() {
   // Basic Info
   const [purpose, setPurpose] = useState(purposes[0]);
   const [category, setCategory] = useState("");
+  const [developmentRatio, setDevelopmentRatio] = useState("");
   
   // Location
   const [selectedState, setSelectedState] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [selectedLocality, setSelectedLocality] = useState("");
-  const [latitude, setLatitude] = useState("");
-  const [longitude, setLongitude] = useState("");
-  
-  const filteredCities = useMemo(() => cities.filter(c => c.stateId === selectedState), [cities, selectedState]);
-  const filteredDistricts = useMemo(() => districts.filter(d => d.cityId === selectedCity), [districts, selectedCity]);
-  const filteredLocalities = useMemo(() => localities.filter(l => l.districtId === selectedDistrict || selectedDistrict === ""), [localities, selectedDistrict]);
+  const [googleMapsUrl, setGoogleMapsUrl] = useState("");
 
   // Details
   const [plotSize, setPlotSize] = useState("");
@@ -133,11 +129,11 @@ export default function PropertyEntry() {
       const payload = {
         purpose,
         category: propertyCategories.find(c => c.id === category)?.name || category,
-        state: states.find(s => s.id === selectedState)?.name,
-        city: cities.find(c => c.id === selectedCity)?.name,
-        district: districts.find(d => d.id === selectedDistrict)?.name,
+        state: selectedState,
+        city: selectedCity,
+        district: selectedDistrict,
         locality: selectedLocality,
-        plotSize: plotSizes.find(p => p.id === plotSize)?.name,
+        plotSize: plotSize,
         facing,
         roadSize,
         totalPrice,
@@ -146,8 +142,8 @@ export default function PropertyEntry() {
         description,
         status,
         isFeatured,
-        latitude,
-        longitude,
+        googleMapsUrl,
+        developmentRatio: ['Joint Development', 'Ratio Development'].includes(purpose) ? developmentRatio : null,
         layoutApprovals: selectedLayouts.map(id => layouts.find(l => l.id === id)?.name),
         amenities: selectedAmenities.map(id => masterAmenities.find(a => a.id === id)?.name),
         ownerType,
@@ -217,82 +213,144 @@ export default function PropertyEntry() {
                   {propertyCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </select>
               </div>
+              {['Joint Development', 'Ratio Development'].includes(purpose) && (
+                <div className="form-group">
+                  <label className="form-label">Development Ratio (Owner : Builder)</label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. 60:40 or 50:50"
+                    value={developmentRatio}
+                    onChange={e => setDevelopmentRatio(e.target.value)}
+                  />
+                  <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                    Enter as Owner share : Builder share (e.g. 60:40)
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Location */}
             <h3 className={styles.sectionHeading}>Location Details</h3>
             <div className={styles.grid}>
+
+              {/* Hidden datalists for suggestions */}
+              <datalist id="states-list">
+                {states.map((s: any) => <option key={s.id} value={s.name} />)}
+              </datalist>
+              <datalist id="cities-list">
+                {cities.map((c: any) => <option key={c.id} value={c.name} />)}
+              </datalist>
+              <datalist id="districts-list">
+                {districts.map((d: any) => <option key={d.id} value={d.name} />)}
+              </datalist>
+              <datalist id="localities-list">
+                {localities.map((l: any) => <option key={l.id} value={l.name} />)}
+              </datalist>
+
               <div className="form-group">
                 <label className="form-label">State</label>
-                <select className="form-select" value={selectedState} onChange={e => {
-                  setSelectedState(e.target.value); setSelectedCity(""); setSelectedDistrict(""); setSelectedLocality("");
-                }}>
-                  <option value="">Select State</option>
-                  {states.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">City</label>
-                <select className="form-select" value={selectedCity} onChange={e => {
-                  setSelectedCity(e.target.value); setSelectedDistrict(""); setSelectedLocality("");
-                }}>
-                  <option value="">Select City</option>
-                  {filteredCities.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">District</label>
-                <select className="form-select" value={selectedDistrict} onChange={e => {
-                  setSelectedDistrict(e.target.value); setSelectedLocality("");
-                }}>
-                  <option value="">Select District</option>
-                  {filteredDistricts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Locality</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  placeholder="e.g. Banjara Hills" 
-                  value={selectedLocality} 
-                  onChange={e => setSelectedLocality(e.target.value)} 
-                 
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Telangana"
+                  list="states-list"
+                  value={selectedState}
+                  onChange={e => setSelectedState(e.target.value)}
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Latitude (Optional)</label>
-                <input type="text" className="form-input" placeholder="e.g. 17.3850" value={latitude} onChange={e => setLatitude(e.target.value)} />
+                <label className="form-label">City</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Hyderabad"
+                  list="cities-list"
+                  value={selectedCity}
+                  onChange={e => setSelectedCity(e.target.value)}
+                />
               </div>
               <div className="form-group">
-                <label className="form-label">Longitude (Optional)</label>
-                <input type="text" className="form-input" placeholder="e.g. 78.4867" value={longitude} onChange={e => setLongitude(e.target.value)} />
+                <label className="form-label">District</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Medchal-Malkajgiri"
+                  list="districts-list"
+                  value={selectedDistrict}
+                  onChange={e => setSelectedDistrict(e.target.value)}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Locality / Area</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. Banjara Hills, Chegunta"
+                  list="localities-list"
+                  value={selectedLocality}
+                  onChange={e => setSelectedLocality(e.target.value)}
+                />
+              </div>
+              <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                <label className="form-label">📍 Google Maps Link</label>
+                <input
+                  type="url"
+                  className="form-input"
+                  placeholder="Paste Google Maps link e.g. https://maps.app.goo.gl/..."
+                  value={googleMapsUrl}
+                  onChange={e => setGoogleMapsUrl(e.target.value)}
+                />
               </div>
             </div>
 
             {/* Details */}
             <h3 className={styles.sectionHeading}>Property Attributes</h3>
             <div className={styles.grid}>
+
+              {/* Datalists for attribute suggestions */}
+              <datalist id="plot-sizes-list">
+                {plotSizes.map((s: any) => <option key={s.id} value={s.name} />)}
+              </datalist>
+              <datalist id="facings-list">
+                {facings.map(f => <option key={f} value={f} />)}
+              </datalist>
+              <datalist id="road-sizes-list">
+                {roadSizes.map(r => <option key={r} value={r} />)}
+              </datalist>
+
               <div className="form-group">
                 <label className="form-label">Plot Size</label>
-                <select className="form-select" value={plotSize} onChange={e => setPlotSize(e.target.value)}>
-                  <option value="">Select Plot Size</option>
-                  {plotSizes.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. 200 Sq.Yd, 1000-2000 Sq.Ft."
+                  list="plot-sizes-list"
+                  value={plotSize}
+                  onChange={e => setPlotSize(e.target.value)}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Facing</label>
-                <select className="form-select" value={facing} onChange={e => setFacing(e.target.value)}>
-                  <option value="">Select Facing</option>
-                  {facings.map(f => <option key={f} value={f}>{f}</option>)}
-                </select>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. East, North-East"
+                  list="facings-list"
+                  value={facing}
+                  onChange={e => setFacing(e.target.value)}
+                />
               </div>
               <div className="form-group">
                 <label className="form-label">Road Size</label>
-                <select className="form-select" value={roadSize} onChange={e => setRoadSize(e.target.value)}>
-                  <option value="">Select Road Size</option>
-                  {roadSizes.map(r => <option key={r} value={r}>{r}</option>)}
-                </select>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="e.g. 30 Feet, 40 Feet"
+                  list="road-sizes-list"
+                  value={roadSize}
+                  onChange={e => setRoadSize(e.target.value)}
+                />
               </div>
               <div className={`form-group ${styles.fullWidth}`}>
                 <MultiSelect 
@@ -309,12 +367,12 @@ export default function PropertyEntry() {
             <h3 className={styles.sectionHeading}>Pricing</h3>
             <div className={styles.grid}>
               <div className="form-group">
-                <label className="form-label">Total Price (₹)</label>
-                <input type="number" className="form-input" min="0" value={totalPrice} onChange={e => setTotalPrice(e.target.value)} />
+                <label className="form-label">Total Price</label>
+                <input type="text" className="form-input" placeholder="e.g. ₹45 Lakhs, 45,00,000, 1.2 Cr" value={totalPrice} onChange={e => setTotalPrice(e.target.value)} />
               </div>
               <div className="form-group">
-                <label className="form-label">Price Per Sq.Yard (₹ - Optional)</label>
-                <input type="number" className="form-input" min="0" value={pricePerSqYard} onChange={e => setPricePerSqYard(e.target.value)} />
+                <label className="form-label">Price Per Sq.Yard (Optional)</label>
+                <input type="text" className="form-input" placeholder="e.g. ₹5,000 per Sq.Yd" value={pricePerSqYard} onChange={e => setPricePerSqYard(e.target.value)} />
               </div>
               <div className="form-group">
                 <label className={styles.radioLabel}>

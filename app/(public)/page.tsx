@@ -77,11 +77,45 @@ function FeaturedProperties() {
 }
 
 export default function Home() {
+  const [cms, setCms] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetch('/api/settings?group=Homepage')
+      .then(res => res.json())
+      .then(data => {
+        if (!data.error) setCms(data);
+      });
+  }, []);
+
   return (
     <div>
+      {/* Announcement Bar */}
+      {cms.announcementEnabled === 'true' && (
+        <div style={{ background: "var(--primary)", color: "white", padding: "0.5rem", textAlign: "center", fontWeight: "bold", fontSize: "0.875rem" }}>
+          {cms.announcementLink ? (
+            <Link href={cms.announcementLink} style={{ color: "white", textDecoration: "underline" }}>
+              {cms.announcementText}
+            </Link>
+          ) : (
+            cms.announcementText
+          )}
+        </div>
+      )}
+
       {/* Hero Section */}
-      <section className={styles.hero}>
+      <section className={styles.hero} style={cms.heroImageUrl ? { backgroundImage: `url(\${cms.heroImageUrl})` } : {}}>
         <div className={styles.heroOverlay}></div>
+        {cms.heroVideoUrl && (
+          <video 
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: -1 }}
+          >
+            <source src={cms.heroVideoUrl} type="video/mp4" />
+          </video>
+        )}
         <div className={`container ${styles.heroContent}`}>
           <motion.div
             initial="hidden"
@@ -89,16 +123,28 @@ export default function Home() {
             variants={staggerContainer}
           >
             <motion.h1 variants={fadeInUp} className={styles.heroTitle}>
-              Building Your Dreams, <br />
-              <span className={styles.heroHighlight}>Securing Your Future.</span>
+              {cms.heroHeadline ? (
+                <div dangerouslySetInnerHTML={{ __html: cms.heroHeadline.replace('\\n', '<br />') }} />
+              ) : (
+                <>
+                  Building Your Dreams, <br />
+                  <span className={styles.heroHighlight}>Securing Your Future.</span>
+                </>
+              )}
             </motion.h1>
             <motion.p variants={fadeInUp} className={styles.heroSubtitle}>
-              Premium residential and commercial properties designed for modern living and unmatched business success.
+              {cms.heroSubheading || "Premium residential and commercial properties designed for modern living and unmatched business success."}
             </motion.p>
             <motion.div variants={fadeInUp} className={styles.heroButtons}>
-              <Link href="/buy-properties" className="btn btn-primary">
-                Buy Property <ArrowRight size={20} />
-              </Link>
+              {cms.heroCtaText ? (
+                <Link href={cms.heroCtaLink || "/projects"} className="btn btn-primary">
+                  {cms.heroCtaText} <ArrowRight size={20} />
+                </Link>
+              ) : (
+                <Link href="/buy-properties" className="btn btn-primary">
+                  Buy Property <ArrowRight size={20} />
+                </Link>
+              )}
               <Link href="/sell-properties" className="btn btn-secondary">
                 Sell Property
               </Link>
@@ -185,22 +231,24 @@ export default function Home() {
       </section>
 
       {/* Featured Properties */}
-      <section className={`section-padding ${styles.bgLight}`}>
-        <div className="container">
-          <div className="text-center">
-            <h2 className="section-title">Featured Properties</h2>
-            <p className="section-subtitle">Explore our exclusive selection of premium properties available right now.</p>
+      {cms.showFeaturedProperties !== 'false' && (
+        <section className={`section-padding ${styles.bgLight}`}>
+          <div className="container">
+            <div className="text-center">
+              <h2 className="section-title">Featured Properties</h2>
+              <p className="section-subtitle">Explore our exclusive selection of premium properties available right now.</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md-grid-cols-3 gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
+              <FeaturedProperties />
+            </div>
+            
+            <div className="text-center" style={{ marginTop: '3rem' }}>
+              <Link href="/company-properties" className="btn btn-primary">View All Properties</Link>
+            </div>
           </div>
-          
-          <div className="grid grid-cols-1 md-grid-cols-3 gap-6" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-            <FeaturedProperties />
-          </div>
-          
-          <div className="text-center" style={{ marginTop: '3rem' }}>
-            <Link href="/company-properties" className="btn btn-primary">View All Properties</Link>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
 
       {/* CTA Section */}

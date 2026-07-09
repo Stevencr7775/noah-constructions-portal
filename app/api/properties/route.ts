@@ -19,8 +19,8 @@ export async function POST(request: Request) {
     const property = await prisma.property.create({
       data: {
         propertyId, purpose, category, state, city, district, locality, plotSize, facing, roadSize,
-        totalPrice: totalPrice ? parseFloat(totalPrice) : null,
-        pricePerSqYard: pricePerSqYard ? parseFloat(pricePerSqYard) : null,
+        totalPrice: totalPrice || null,
+        pricePerSqYard: pricePerSqYard || null,
         isNegotiable: Boolean(isNegotiable),
         description, status, isFeatured: Boolean(isFeatured),
         latitude: latitude ? parseFloat(latitude) : null,
@@ -96,13 +96,13 @@ export async function GET(request: Request) {
     if (searchParams.get('isFeatured') === 'true') filters.isFeatured = true;
 
     // Range queries for budget
-    const minBudget = searchParams.get('minBudget');
-    const maxBudget = searchParams.get('maxBudget');
-    if (minBudget || maxBudget) {
-      filters.totalPrice = {};
-      if (minBudget) filters.totalPrice.gte = parseFloat(minBudget);
-      if (maxBudget) filters.totalPrice.lte = parseFloat(maxBudget);
-    }
+    // const minBudget = searchParams.get('minBudget');
+    // const maxBudget = searchParams.get('maxBudget');
+    // if (minBudget || maxBudget) {
+    //   filters.totalPrice = {};
+    //   if (minBudget) filters.totalPrice.gte = parseFloat(minBudget);
+    //   if (maxBudget) filters.totalPrice.lte = parseFloat(maxBudget);
+    // }
 
     const properties = await prisma.property.findMany({
       where: filters,

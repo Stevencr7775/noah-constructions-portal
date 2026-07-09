@@ -1,43 +1,96 @@
 "use client";
 
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import KPICard from "@/components/dashboard/KPICard";
+import { LineChart, BarChart } from "@/components/dashboard/Charts";
+import { Home, List, Database, Users, Building2, Download, Settings, BarChart as ChartIcon, CheckCircle, Clock, FileText, PenTool, LayoutTemplate, Briefcase, Calendar, Layers, QrCode } from "lucide-react";
 import Link from "next/link";
-import { PlusCircle, Database } from "lucide-react";
+
+const sidebarLinks = [
+  { label: "Dashboard", href: "/admin", icon: <Home size={20} /> },
+  { label: "Project Management", href: "/admin/pm", icon: <Calendar size={20} /> },
+  { label: "Inventory", href: "/admin/inventory", icon: <Layers size={20} /> },
+  { label: "Approvals", href: "/admin/approvals", icon: <CheckCircle size={20} /> },
+  { label: "Properties", href: "/admin/properties", icon: <Building2 size={20} /> },
+  { label: "Add Property", href: "/admin/property-entry", icon: <List size={20} /> },
+  { label: "CRM & Leads", href: "/admin/crm", icon: <Users size={20} /> },
+  { label: "Website CMS", href: "/admin/cms", icon: <LayoutTemplate size={20} /> },
+  { label: "Blogs & News", href: "/admin/cms/blogs", icon: <PenTool size={20} /> },
+  { label: "Team & Careers", href: "/admin/cms/team", icon: <Briefcase size={20} /> },
+  { label: "Master Data", href: "/admin/master-data", icon: <Database size={20} /> },
+  { label: "Reports", href: "/admin/reports", icon: <ChartIcon size={20} /> },
+  { label: "Documents", href: "/admin/documents", icon: <FileText size={20} /> },
+  { label: "QR Generator", href: "/admin/qr", icon: <QrCode size={20} /> },
+  { label: "System Health", href: "/admin/system", icon: <Database size={20} /> },
+  { label: "Settings", href: "/admin/settings", icon: <Settings size={20} /> },
+];
+
+const mockGrowthData: any[] = [];
 
 export default function AdminDashboard() {
   return (
-    <div style={{ padding: '4rem 2rem', minHeight: '100vh', backgroundColor: 'var(--background)' }}>
-      <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-        <h1 className="section-title text-primary" style={{ marginBottom: '1rem' }}>Admin Dashboard</h1>
-        <p className="text-muted" style={{ marginBottom: '3rem' }}>Manage the Property Management System</p>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-          
-          <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
-            <PlusCircle size={48} className="text-primary mx-auto mb-4" />
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--primary)' }}>Add New Property</h3>
-            <p className="text-muted" style={{ marginBottom: '1.5rem' }}>Enter a new property into the centralized database with images and details.</p>
-            <Link href="/admin/property-entry" className="btn btn-primary">Go to Entry Form</Link>
-          </div>
+    <DashboardLayout role="ADMIN" links={sidebarLinks}>
+      <h1 className="section-title text-primary mb-6" style={{ fontSize: "1.75rem" }}>Super Admin Dashboard</h1>
+      
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
+        <KPICard title="Website Visitors" value="0" icon={<Users size={24} />} color="#3b82f6" />
+        <KPICard title="Total Properties" value="0" icon={<Building2 size={24} />} color="#8b5cf6" />
+        <KPICard title="Published Properties" value="0" icon={<CheckCircle size={24} />} color="#16a34a" />
+        <KPICard title="Ongoing Projects" value="0" icon={<Database size={24} />} color="#eab308" />
+        <KPICard title="New Enquiries" value="0" icon={<Clock size={24} />} color="#f97316" />
+        <KPICard title="Site Visits" value="0" icon={<Home size={24} />} color="#06b6d4" />
+      </div>
 
-          <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
-            <Database size={48} className="text-primary mx-auto mb-4" />
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--primary)' }}>Master Data</h3>
-            <p className="text-muted" style={{ marginBottom: '1.5rem' }}>Add locations, categories, and options to the database.</p>
-            <Link href="/admin/master-data" className="btn btn-outline">Manage Data</Link>
-          </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
+        <div className="card" style={{ padding: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "1.5rem" }}>Platform Growth</h2>
+          <LineChart 
+            data={mockGrowthData} 
+            xKey="month" 
+            series={[
+              { key: 'users', name: 'Users', color: '#3b82f6' },
+              { key: 'properties', name: 'Properties', color: '#8b5cf6' }
+            ]} 
+          />
+        </div>
 
-          <div className="card" style={{ padding: '2rem', textAlign: 'center' }}>
-            <Database size={48} className="text-primary mx-auto mb-4" />
-            <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: 'var(--primary)' }}>Export Data</h3>
-            <p className="text-muted" style={{ marginBottom: '1.5rem' }}>Download a complete report of all properties in the system.</p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <a href="/api/export?format=xlsx" className="btn btn-outline" download>Export Excel</a>
-              <a href="/api/export?format=csv" className="btn btn-outline" download>Export CSV</a>
-            </div>
+        <div className="card" style={{ padding: "1.5rem" }}>
+          <h2 style={{ fontSize: "1.25rem", marginBottom: "1.5rem" }}>CMS Quick Shortcuts</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <Link href="/admin/cms" className="btn btn-outline" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "1rem", justifyContent: "flex-start" }}>
+              <LayoutTemplate size={18} /> Manage Homepage
+            </Link>
+            <Link href="/admin/cms/blogs" className="btn btn-outline" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "1rem", justifyContent: "flex-start" }}>
+              <PenTool size={18} /> Write Blog Post
+            </Link>
+            <Link href="/admin/cms/team" className="btn btn-outline" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "1rem", justifyContent: "flex-start" }}>
+              <Briefcase size={18} /> Manage Team
+            </Link>
+            <Link href="/admin/settings" className="btn btn-outline" style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "1rem", justifyContent: "flex-start" }}>
+              <Settings size={18} /> SEO Settings
+            </Link>
           </div>
-
         </div>
       </div>
-    </div>
+
+      <div className="card" style={{ padding: "1.5rem" }}>
+         <h2 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>Latest System Activities</h2>
+         <div style={{ width: "100%", overflowX: "auto" }}>
+           <table style={{ width: "100%", borderCollapse: "collapse" }}>
+             <thead>
+               <tr style={{ borderBottom: "2px solid var(--border)", textAlign: "left" }}>
+                 <th style={{ padding: "1rem", color: "#64748b" }}>Time</th>
+                 <th style={{ padding: "1rem", color: "#64748b" }}>Action</th>
+                 <th style={{ padding: "1rem", color: "#64748b" }}>User/Role</th>
+                 <th style={{ padding: "1rem", color: "#64748b" }}>Status</th>
+               </tr>
+             </thead>
+             <tbody>
+               {[]}
+             </tbody>
+           </table>
+         </div>
+      </div>
+    </DashboardLayout>
   );
 }

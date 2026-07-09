@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Download, Check, X, FileText, FileSpreadsheet, Eye } from 'lucide-react';
+import { Download, Check, X, FileText, FileSpreadsheet, Eye, Pencil, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -42,6 +43,20 @@ export default function AdminPropertiesPage() {
       }
     } catch (error) {
       console.error("Update failed", error);
+    }
+  };
+
+  const handleDelete = async (id: string, propertyId: string) => {
+    if (!confirm(`Delete property ${propertyId}? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/admin/properties?id=${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setProperties(properties.filter(p => p.id !== id));
+      } else {
+        alert('Failed to delete property');
+      }
+    } catch (error) {
+      console.error('Delete failed', error);
     }
   };
 
@@ -104,7 +119,7 @@ export default function AdminPropertiesPage() {
     doc.text("Registered Properties Report", 14, 15);
     
     const tableColumn = ["ID", "Seller", "Type", "Purpose", "Location", "Price", "Status"];
-    const tableRows = [];
+    const tableRows: any[] = [];
 
     properties.forEach(p => {
       const rowData = [
@@ -113,7 +128,7 @@ export default function AdminPropertiesPage() {
         p.seller?.type || 'N/A',
         p.purpose,
         p.city,
-        p.totalPrice.toString(),
+        p.totalPrice != null ? p.totalPrice.toString() : '—',
         p.status
       ];
       tableRows.push(rowData);
@@ -171,7 +186,8 @@ export default function AdminPropertiesPage() {
                 <td style={{ padding: '1rem' }}>
                   <div style={{ fontWeight: '600' }}>{p.purpose}</div>
                   <div className="text-sm text-muted">{p.category}</div>
-                  <div className="text-sm text-muted">₹{p.totalPrice.toLocaleString()}</div>
+                  <div className="text-sm text-muted">{p.totalPrice ?? '—'}</div>
+                  {p.pricePerSqYard && <div className="text-sm text-muted" style={{ fontSize: '0.75rem' }}>({p.pricePerSqYard})</div>}
                 </td>
                 <td style={{ padding: '1rem' }}>
                   <div>{p.locality}</div>
@@ -190,22 +206,33 @@ export default function AdminPropertiesPage() {
                   </span>
                 </td>
                 <td style={{ padding: '1rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    <Link
+                      href={`/admin/property-entry/${p.id}`}
+                      className="btn"
+                      style={{ padding: '0.25rem 0.6rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '0.25rem', textDecoration: 'none', fontSize: '0.8rem' }}
+                      title="Edit Property"
+                    >
+                      <Pencil size={14} /> Edit
+                    </Link>
                     {p.status === 'Pending Approval' && (
                       <>
                         <button onClick={() => handleUpdateStatus(p.id, 'Available')} className="btn" style={{ padding: '0.25rem 0.5rem', background: '#10B981', color: 'white', border: 'none', borderRadius: '4px' }} title="Approve">
-                          <Check size={18} />
+                          <Check size={16} />
                         </button>
                         <button onClick={() => handleUpdateStatus(p.id, 'Hidden')} className="btn" style={{ padding: '0.25rem 0.5rem', background: '#EF4444', color: 'white', border: 'none', borderRadius: '4px' }} title="Reject/Hide">
-                          <X size={18} />
+                          <X size={16} />
                         </button>
                       </>
                     )}
                     {p.status === 'Available' && (
                       <button onClick={() => handleUpdateStatus(p.id, 'Hidden')} className="btn" style={{ padding: '0.25rem 0.5rem', background: 'var(--text-muted)', color: 'white', border: 'none', borderRadius: '4px' }} title="Hide Listing">
-                        <Eye size={18} />
+                        <Eye size={16} />
                       </button>
                     )}
+                    <button onClick={() => handleDelete(p.id, p.propertyId)} className="btn" style={{ padding: '0.25rem 0.5rem', background: '#EF4444', color: 'white', border: 'none', borderRadius: '4px' }} title="Delete">
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                 </td>
               </tr>

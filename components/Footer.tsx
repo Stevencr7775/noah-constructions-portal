@@ -43,6 +43,7 @@ export default function Footer() {
             <li><Link href="#">Privacy Policy</Link></li>
             <li><Link href="#">Careers</Link></li>
             <li><Link href="#">News & Updates</Link></li>
+            <li><Link href="/admin/login" style={{ color: "var(--primary)" }}>Admin Portal</Link></li>
           </ul>
         </div>
 
