@@ -1,10 +1,9 @@
-"use client";
-
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import KPICard from "@/components/dashboard/KPICard";
 import { LineChart, BarChart } from "@/components/dashboard/Charts";
 import { Home, List, Database, Users, Building2, Download, Settings, BarChart as ChartIcon, CheckCircle, Clock, FileText, PenTool, LayoutTemplate, Briefcase, Calendar, Layers, QrCode } from "lucide-react";
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 const sidebarLinks = [
   { label: "Dashboard", href: "/admin", icon: <Home size={20} /> },
@@ -27,18 +26,24 @@ const sidebarLinks = [
 
 const mockGrowthData: any[] = [];
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const totalProperties = await prisma.property.count();
+  const publishedProperties = await prisma.property.count({ where: { status: "Approved" } });
+  const ongoingProjects = await prisma.project.count({ where: { status: "Active" } });
+  const newEnquiries = await prisma.lead.count({ where: { status: "New" } });
+  const siteVisits = await prisma.siteVisit.count();
+
   return (
     <DashboardLayout role="ADMIN" links={sidebarLinks}>
       <h1 className="section-title text-primary mb-6" style={{ fontSize: "1.75rem" }}>Super Admin Dashboard</h1>
       
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
         <KPICard title="Website Visitors" value="0" icon={<Users size={24} />} color="#3b82f6" />
-        <KPICard title="Total Properties" value="0" icon={<Building2 size={24} />} color="#8b5cf6" />
-        <KPICard title="Published Properties" value="0" icon={<CheckCircle size={24} />} color="#16a34a" />
-        <KPICard title="Ongoing Projects" value="0" icon={<Database size={24} />} color="#eab308" />
-        <KPICard title="New Enquiries" value="0" icon={<Clock size={24} />} color="#f97316" />
-        <KPICard title="Site Visits" value="0" icon={<Home size={24} />} color="#06b6d4" />
+        <KPICard title="Total Properties" value={totalProperties} icon={<Building2 size={24} />} color="#8b5cf6" />
+        <KPICard title="Published Properties" value={publishedProperties} icon={<CheckCircle size={24} />} color="#16a34a" />
+        <KPICard title="Ongoing Projects" value={ongoingProjects} icon={<Database size={24} />} color="#eab308" />
+        <KPICard title="New Enquiries" value={newEnquiries} icon={<Clock size={24} />} color="#f97316" />
+        <KPICard title="Site Visits" value={siteVisits} icon={<Home size={24} />} color="#06b6d4" />
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", marginBottom: "2rem" }}>
