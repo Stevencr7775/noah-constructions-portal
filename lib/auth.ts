@@ -10,7 +10,7 @@ interface SessionPayload {
   [key: string]: any;
 }
 
-const secretKey = process.env.JWT_SECRET || "default_super_secret_key_change_in_production";
+const secretKey = process.env.SESSION_SECRET || process.env.JWT_SECRET || "default_super_secret_key_change_in_production";
 const key = new TextEncoder().encode(secretKey);
 
 export async function encrypt(payload: SessionPayload) {
