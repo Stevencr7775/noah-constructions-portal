@@ -124,6 +124,15 @@ export default async function PropertyDetailsPage({ params }: { params: { id: st
                   </div>
                 </div>
               )}
+              {property.developmentRatio && (
+                <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+                  <div style={{ background: "#f1f5f9", padding: "0.75rem", borderRadius: "8px" }}><Grid size={24} color="var(--primary)" /></div>
+                  <div>
+                    <p className="text-muted" style={{ fontSize: "0.875rem" }}>Development Ratio</p>
+                    <p style={{ fontWeight: "bold" }}>{property.developmentRatio}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -140,7 +149,7 @@ export default async function PropertyDetailsPage({ params }: { params: { id: st
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                    <p className="text-muted" style={{ margin: 0 }}>{property.address || `${property.locality}, ${property.city}`}</p>
                    <a 
-                     href={`https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}`}
+                     href={property.googleMapsUrl || `https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}`}
                      target="_blank"
                      rel="noreferrer"
                      className="btn btn-outline"

@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     const {
       purpose, category, state, city, district, locality, plotSize, facing, roadSize,
       totalPrice, pricePerSqYard, isNegotiable, description, status, isFeatured,
-      latitude, longitude, layoutApprovals, amenities,
+      latitude, longitude, layoutApprovals, amenities, googleMapsUrl, developmentRatio,
       ownerType, ownerDetails, agentDetails, mediaFiles
     } = data;
 
@@ -25,6 +25,8 @@ export async function POST(request: Request) {
         description, status, isFeatured: Boolean(isFeatured),
         latitude: latitude ? parseFloat(latitude) : null,
         longitude: longitude ? parseFloat(longitude) : null,
+        googleMapsUrl: googleMapsUrl || null,
+        developmentRatio: developmentRatio || null,
         layoutApprovals: JSON.stringify(layoutApprovals || []),
         amenities: JSON.stringify(amenities || []),
         
