@@ -149,7 +149,10 @@ export default function CompanyProperties() {
                   <div className={styles.cardContent}>
                     <div className={styles.cardHeader}>
                       <span className={styles.cardType}>{prop.category}</span>
-                      <span className={styles.cardPrice}>₹{prop.totalPrice.toLocaleString('en-IN')}</span>
+                      <span className={styles.cardPrice}>
+                        ₹{prop.totalPrice.toLocaleString('en-IN')}
+                        {prop.pricePerSqYard && <span style={{ fontSize: '0.75rem', fontWeight: 'normal', display: 'block' }}>₹{Number(prop.pricePerSqYard).toLocaleString('en-IN')} / Sq.Yd</span>}
+                      </span>
                     </div>
                     <h3 className={styles.cardTitle}>{prop.propertyId} - {prop.purpose}</h3>
                     <div className={styles.cardLocation}>

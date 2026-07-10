@@ -187,6 +187,7 @@ function SearchContent() {
                     </p>
                     <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--primary)", marginTop: "auto", marginBottom: "1rem" }}>
                       ₹{prop.totalPrice?.toLocaleString('en-IN') || 'Request Price'}
+                      {prop.pricePerSqYard && <span style={{ fontSize: '1rem', color: 'var(--text-muted)', marginLeft: '0.5rem', fontWeight: 'normal' }}> (₹{Number(prop.pricePerSqYard).toLocaleString('en-IN')}/sq.yd)</span>}
                     </h3>
                     <div style={{ display: "flex", gap: "0.5rem" }}>
                       <Link href={`/properties/${prop.id}`} className="btn btn-outline" style={{ flex: 1, textAlign: "center", padding: "0.5rem" }}>View</Link>

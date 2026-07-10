@@ -90,7 +90,10 @@ export default function SellerProperties() {
                 <div style={{ display: "flex", gap: "1.5rem", color: "var(--text-muted)", fontSize: "0.875rem" }}>
                   <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}><MapPin size={14} /> {prop.locality}, {prop.city}</span>
                   <span style={{ display: "flex", alignItems: "center", gap: "0.25rem" }}><Tag size={14} /> {prop.propertyType || prop.category || 'N/A'}</span>
-                  <span style={{ fontWeight: "bold", color: "var(--primary)" }}>₹{prop.totalPrice?.toLocaleString('en-IN') || 'Price on request'}</span>
+                  <span style={{ fontWeight: "bold", color: "var(--primary)" }}>
+                    ₹{prop.totalPrice?.toLocaleString('en-IN') || 'Price on request'}
+                    {prop.pricePerSqYard && <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginLeft: '0.25rem', fontWeight: 'normal' }}>(₹{Number(prop.pricePerSqYard).toLocaleString('en-IN')}/sq.yd)</span>}
+                  </span>
                 </div>
               </div>
               

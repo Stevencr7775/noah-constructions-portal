@@ -62,7 +62,10 @@ function FeaturedProperties() {
           <div className={styles.cardContent}>
             <h3 className={styles.cardTitle}>{prop.propertyId} - {prop.purpose}</h3>
             <p className={styles.cardLocation}>{prop.locality}, {prop.city}</p>
-            <div className={styles.cardPrice}>₹{prop.totalPrice.toLocaleString('en-IN')}</div>
+            <div className={styles.cardPrice}>
+              ₹{prop.totalPrice.toLocaleString('en-IN')}
+              {prop.pricePerSqYard && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '0.5rem', fontWeight: 'normal' }}> (₹{Number(prop.pricePerSqYard).toLocaleString('en-IN')}/sq.yd)</span>}
+            </div>
             <div className={styles.cardFeatures}>
               <span>{prop.category}</span>
               <span>{prop.facing} Facing</span>

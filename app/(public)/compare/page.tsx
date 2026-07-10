@@ -74,6 +74,7 @@ function CompareContent() {
               {properties.map(p => (
                 <td key={p.id} style={{ padding: "1rem", border: "1px solid var(--border)", textAlign: "center", fontWeight: "bold", color: "var(--primary)" }}>
                   ₹{p.totalPrice?.toLocaleString('en-IN') || 'N/A'}
+                  {p.pricePerSqYard && <div style={{ fontSize: '0.875rem', color: 'var(--text-muted)', fontWeight: 'normal', marginTop: '0.25rem' }}>₹{Number(p.pricePerSqYard).toLocaleString('en-IN')}/sq.yd</div>}
                 </td>
               ))}
             </tr>

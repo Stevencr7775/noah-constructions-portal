@@ -72,6 +72,7 @@ export default function BuyerFavorites() {
                 </p>
                 <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", color: "var(--primary)", marginTop: "auto", marginBottom: "1rem" }}>
                   ₹{fav.property.totalPrice?.toLocaleString('en-IN') || 'Price on request'}
+                  {fav.property.pricePerSqYard && <span style={{ fontSize: '1rem', color: 'var(--text-muted)', marginLeft: '0.5rem', fontWeight: 'normal' }}> (₹{Number(fav.property.pricePerSqYard).toLocaleString('en-IN')}/sq.yd)</span>}
                 </h3>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <Link href={`/properties/${fav.property.id}`} target="_blank" className="btn btn-outline" style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem" }}>

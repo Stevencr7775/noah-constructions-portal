@@ -15,6 +15,7 @@ export async function GET(request: Request) {
         propertyType: true,
         status: true,
         totalPrice: true,
+        pricePerSqYard: true,
         city: true,
         locality: true,
         views: true,
@@ -23,9 +24,9 @@ export async function GET(request: Request) {
     });
 
     if (format === 'csv') {
-      const header = "ID,Title,Type,Status,Price,City,Locality,Views,Enquiries\n";
+      const header = "ID,Title,Type,Status,Total Price,Price Per Sq Yard,City,Locality,Views,Enquiries\n";
       const rows = properties.map(p => 
-        `"${p.propertyId}","${p.title || ''}","${p.propertyType || ''}","${p.status}","${p.totalPrice || 0}","${p.city || ''}","${p.locality || ''}",${p.views},${p.enquiries}`
+        `"${p.propertyId}","${p.title || ''}","${p.propertyType || ''}","${p.status}","${p.totalPrice || 0}","${p.pricePerSqYard || ''}","${p.city || ''}","${p.locality || ''}",${p.views},${p.enquiries}`
       ).join("\n");
       
       return new NextResponse(header + rows, {
