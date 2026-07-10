@@ -115,13 +115,21 @@ export default function PropertyEntry() {
     try {
       // 1. Upload Files
       const uploadedMedia = [];
+      let uploadFailed = false;
       for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
-        const uploadData = await uploadRes.json();
-        if (uploadData.success) {
-          uploadedMedia.push({ url: uploadData.url, type: uploadData.type });
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+          if (uploadRes.ok) {
+            const uploadData = await uploadRes.json();
+            if (uploadData.success) {
+              uploadedMedia.push({ url: uploadData.url, type: uploadData.type });
+            } else { uploadFailed = true; }
+          } else { uploadFailed = true; }
+        } catch (e) {
+          console.error("File upload error", e);
+          uploadFailed = true;
         }
       }
 
@@ -162,6 +170,9 @@ export default function PropertyEntry() {
       const data = await res.json();
       if (data.success) {
         setIsSubmitted(true);
+        if (uploadFailed) {
+          alert("Property saved successfully! However, media uploads failed because local storage is read-only on Vercel. Please set up Cloud Storage.");
+        }
       } else {
         alert("Error saving property: " + data.error);
       }
