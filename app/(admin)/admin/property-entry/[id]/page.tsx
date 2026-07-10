@@ -216,20 +216,26 @@ export default function PropertyEditor() {
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        throw new Error(`Server returned an invalid response (Status: ${res.status}). The database might be waking up or the request timed out. Please try again in 10 seconds.`);
+      }
+
       if (data.success) {
         if (uploadFailed) {
           alert("Property updated! However, some new media uploads failed.");
         } else {
           alert("Property updated successfully!");
         }
-        router.push('/admin/properties');
+        setIsSubmitted(true);
       } else {
         alert("Error updating property: " + data.error);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Update failed.");
+      alert("Update failed: " + (error.message || "Unknown error"));
     } finally {
       setLoading(false);
     }

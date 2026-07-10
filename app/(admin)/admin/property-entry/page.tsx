@@ -175,7 +175,13 @@ export default function PropertyEntry() {
         body: JSON.stringify(payload)
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        throw new Error(`Server returned an invalid response (Status: ${res.status}). The database might be waking up or the request timed out. Please try again in 10 seconds.`);
+      }
+
       if (data.success) {
         setIsSubmitted(true);
         if (uploadFailed) {
@@ -184,9 +190,9 @@ export default function PropertyEntry() {
       } else {
         alert("Error saving property: " + data.error);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Submission failed.");
+      alert("Submission failed: " + (error.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
