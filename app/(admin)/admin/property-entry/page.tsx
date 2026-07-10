@@ -120,13 +120,21 @@ export default function PropertyEntry() {
         try {
           const formData = new FormData();
           formData.append('file', file);
-          const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData });
+          formData.append('upload_preset', 'gvpaydqy');
+          
+          const uploadRes = await fetch('https://api.cloudinary.com/v1_1/eyt7q3en/auto/upload', { 
+            method: 'POST', 
+            body: formData 
+          });
+          
           if (uploadRes.ok) {
             const uploadData = await uploadRes.json();
-            if (uploadData.success) {
-              uploadedMedia.push({ url: uploadData.url, type: uploadData.type });
-            } else { uploadFailed = true; }
-          } else { uploadFailed = true; }
+            // Cloudinary returns secure_url and resource_type (image/video/raw)
+            uploadedMedia.push({ url: uploadData.secure_url, type: uploadData.resource_type });
+          } else { 
+            uploadFailed = true; 
+            console.error("Cloudinary upload failed with status:", uploadRes.status);
+          }
         } catch (e) {
           console.error("File upload error", e);
           uploadFailed = true;
@@ -171,7 +179,7 @@ export default function PropertyEntry() {
       if (data.success) {
         setIsSubmitted(true);
         if (uploadFailed) {
-          alert("Property saved successfully! However, media uploads failed because local storage is read-only on Vercel. Please set up Cloud Storage.");
+          alert("Property saved successfully! However, some media uploads failed.");
         }
       } else {
         alert("Error saving property: " + data.error);
