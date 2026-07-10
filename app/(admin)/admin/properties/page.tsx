@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Download, Check, X, FileText, FileSpreadsheet, Eye, Pencil, Trash2 } from 'lucide-react';
+import { Download, Check, X, FileText, FileSpreadsheet, Eye, Pencil, Trash2, Plus } from 'lucide-react';
 import Link from 'next/link';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -150,6 +150,9 @@ export default function AdminPropertiesPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <h1 className="section-title mb-0">Admin Dashboard - Properties</h1>
         <div style={{ display: 'flex', gap: '1rem' }}>
+          <Link href="/admin/property-entry" className="btn btn-primary" style={{ padding: '0.5rem 1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none' }}>
+            <Plus size={18} /> Add Property
+          </Link>
           <button onClick={exportCSV} className="btn btn-outline" style={{ padding: '0.5rem 1rem' }}>
             <Download size={18} /> CSV
           </button>
